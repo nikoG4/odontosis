@@ -14,14 +14,20 @@ async function bootstrap() {
 
   const appDistPath = join(process.cwd(), "apps", "app", "dist");
   const appIndexPath = join(appDistPath, "index.html");
-  if (existsSync(appIndexPath)) {
-    app.useStaticAssets(appDistPath);
-    app.setBaseViewsDir(appDistPath);
+  const sharedAssetsPath = "/opt/odontosis/shared/assets";
 
+  if (existsSync(appDistPath)) {
+    app.useStaticAssets(appDistPath);
+  }
+  if (existsSync(sharedAssetsPath)) {
+    app.useStaticAssets(sharedAssetsPath, { prefix: "/assets" });
+  }
+
+  if (existsSync(appIndexPath)) {
     const express = app.getHttpAdapter().getInstance();
     const serveApp = (_req: unknown, res: any) => res.sendFile(appIndexPath);
     express.get("/", serveApp);
-    express.get(/^\/(?!auth|clinic|users|patients|appointments|clinical-notes|treatments|payments|dashboard|health).*/, serveApp);
+    express.get(/^\/(?!auth|clinic|users|patients|appointments|clinical-notes|treatments|payments|dashboard|health|assets).*/, serveApp);
   }
 
   await app.listen(process.env.PORT || 3001, "0.0.0.0");

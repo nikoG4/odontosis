@@ -16,6 +16,11 @@ export function AuthProvider({ children }) {
         setSession(nextSession);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
     };
+    const loginWithGoogle = async (idToken) => {
+        const nextSession = await api("/auth/google", { method: "POST", body: { idToken } });
+        setSession(nextSession);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
+    };
     const registerClinic = async (payload) => {
         const nextSession = await api("/auth/register-clinic", { method: "POST", body: payload });
         setSession(nextSession);
@@ -29,7 +34,7 @@ export function AuthProvider({ children }) {
         setSession(null);
         localStorage.removeItem(STORAGE_KEY);
     };
-    return _jsx(AuthContext.Provider, { value: { session, login, registerClinic, logout }, children: children });
+    return _jsx(AuthContext.Provider, { value: { session, login, loginWithGoogle, registerClinic, logout }, children: children });
 }
 export function useAuth() {
     const ctx = useContext(AuthContext);

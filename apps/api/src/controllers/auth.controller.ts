@@ -24,6 +24,11 @@ export class AuthController {
     return this.authService.login(body as never);
   }
 
+  @Post("google")
+  google(@Body() body: { idToken: string }) {
+    return this.authService.loginWithGoogle(body.idToken);
+  }
+
   @Post("refresh")
   refresh(@Req() req: Request) {
     const token = (req.body as { refreshToken?: string }).refreshToken;

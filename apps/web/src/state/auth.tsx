@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 type AuthContextValue = {
   session: Session | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   registerClinic: (payload: Record<string, unknown>) => Promise<Session>;
   logout: () => Promise<void>;
 };
@@ -28,6 +29,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
   };
 
+  const loginWithGoogle = async (idToken: string) => {
+    const nextSession = await api<Session>("/auth/google", { method: "POST", body: { idToken } });
+    setSession(nextSession);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
+  };
+
   const registerClinic = async (payload: Record<string, unknown>) => {
     const nextSession = await api<Session>("/auth/register-clinic", { method: "POST", body: payload });
     setSession(nextSession);
@@ -43,7 +50,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  return <AuthContext.Provider value={{ session, login, registerClinic, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ session, login, loginWithGoogle, registerClinic, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

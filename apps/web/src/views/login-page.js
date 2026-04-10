@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -13,7 +14,7 @@ const schema = z.object({
     password: z.string().min(6),
 });
 export function LoginPage() {
-    const { login } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
     const form = useForm({
         resolver: zodResolver(schema),
@@ -28,5 +29,18 @@ export function LoginPage() {
                                 catch (error) {
                                     toast.error(error instanceof Error ? error.message : "No se pudo iniciar sesion");
                                 }
-                            }), children: [_jsxs("div", { children: [_jsx("label", { className: "mb-2 block text-sm font-medium", children: "Email" }), _jsx(Input, { ...form.register("email") })] }), _jsxs("div", { children: [_jsx("label", { className: "mb-2 block text-sm font-medium", children: "Password" }), _jsx(Input, { type: "password", ...form.register("password") })] }), _jsx(Button, { type: "submit", className: "w-full", children: "Entrar al sistema" })] })] })] }) }));
+                            }), children: [_jsxs("div", { children: [_jsx("label", { className: "mb-2 block text-sm font-medium", children: "Email" }), _jsx(Input, { ...form.register("email") })] }), _jsxs("div", { children: [_jsx("label", { className: "mb-2 block text-sm font-medium", children: "Password" }), _jsx(Input, { type: "password", ...form.register("password") })] }), _jsx(Button, { type: "submit", className: "w-full", children: "Entrar al sistema" })] }), _jsxs("div", { className: "relative my-6", children: [_jsx("div", { className: "absolute inset-0 flex items-center", children: _jsx("span", { className: "w-full border-t border-slate-200" }) }), _jsx("div", { className: "relative flex justify-center text-xs uppercase", children: _jsx("span", { className: "bg-white px-2 text-slate-500", children: "O continuar con" }) })] }), _jsx("div", { className: "flex justify-center", children: _jsx(GoogleLogin, { onSuccess: async (credentialResponse) => {
+                                    if (credentialResponse.credential) {
+                                        try {
+                                            await loginWithGoogle(credentialResponse.credential);
+                                            toast.success("Sesion iniciada con Google");
+                                            navigate("/dashboard");
+                                        }
+                                        catch (error) {
+                                            toast.error(error instanceof Error ? error.message : "Error al iniciar sesion con Google");
+                                        }
+                                    }
+                                }, onError: () => {
+                                    toast.error("Error en la autenticacion de Google");
+                                }, useOneTap: true, theme: "outline", size: "large", width: "100%" }) })] })] }) }));
 }

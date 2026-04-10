@@ -3,14 +3,29 @@
     "name": "OdontoSis",
     "slug": "odontosis",
     "scheme": "odontosis",
-    "platforms": ["android", "web"],
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "experiments": {
-      "typedRoutes": true
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
     },
+    "android": {
+      "package": "com.nikoovelar.odontosis"
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
     "web": {
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4196ca1d-37ea-4e5c-bce3-eb4a6a89b51d"
+      }
+    },
+    "owner": "nikoovelar"
   }
 }

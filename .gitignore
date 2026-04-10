@@ -1,5 +1,7 @@
 node_modules
 dist
+**/dist
+**/android
 .turbo
 .vite
 .env
@@ -8,4 +10,12 @@ coverage
 *.log
 oracle-wallet/
 .ssh-test.key
+key.key
 release-oracle.tar.gz
+release-*.tar.gz
+deploy-*.tgz
+.tmp/
+.logs/
+.postgres-data/
+.postgres-data-5433/
+Wallet_*.zip

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -14,7 +15,7 @@ const schema = z.object({
 });
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -59,6 +60,38 @@ export function LoginPage() {
             </div>
             <Button type="submit" className="w-full">Entrar al sistema</Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-500">O continuar con</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                if (credentialResponse.credential) {
+                  try {
+                    await loginWithGoogle(credentialResponse.credential);
+                    toast.success("Sesion iniciada con Google");
+                    navigate("/dashboard");
+                  } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "Error al iniciar sesion con Google");
+                  }
+                }
+              }}
+              onError={() => {
+                toast.error("Error en la autenticacion de Google");
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              width="100%"
+            />
+          </div>
         </Card>
       </div>
     </div>

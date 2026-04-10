@@ -8,6 +8,7 @@ type AuthContextValue = {
   session: Session | null;
   isReady: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
   apiUrl: string;
 };
@@ -37,6 +38,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const nextSession = await apiRequest<Session>("/auth/login", {
           method: "POST",
           body: { email, password },
+          apiUrl,
+        });
+        setSession(nextSession);
+        await setStoredItem(STORAGE_KEY, JSON.stringify(nextSession));
+      },
+      loginWithGoogle: async (idToken: string) => {
+        const nextSession = await apiRequest<Session>("/auth/google", {
+          method: "POST",
+          body: { idToken },
           apiUrl,
         });
         setSession(nextSession);

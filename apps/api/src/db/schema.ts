@@ -26,6 +26,7 @@ export const schemaStatements = [
       role VARCHAR2(30) NOT NULL,
       refresh_token_hash VARCHAR2(255),
       is_active NUMBER(1) DEFAULT 1 NOT NULL,
+      google_id VARCHAR2(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
       CONSTRAINT users_tenant_email_uk UNIQUE (tenant_id, email)

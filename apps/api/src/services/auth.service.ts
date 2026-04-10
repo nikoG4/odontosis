@@ -7,6 +7,7 @@ import { createId, fromDbBool, serializeJson } from "../db/helpers";
 import { AuditService } from "./audit.service";
 import { BillingService } from "./billing.service";
 import { DatabaseService } from "./database.service";
+import { OAuth2Client } from "google-auth-library";
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -32,12 +33,61 @@ export const registerClinicSchema = z.object({
 
 @Injectable()
 export class AuthService {
+  private googleClient = new OAuth2Client();
+  private googleAudiences = [
+    process.env.GOOGLE_CLIENT_ID_WEB || "673073717912-6su2u0ofd04gial1gb321cdd9kbsk3fq.apps.googleusercontent.com",
+    process.env.GOOGLE_CLIENT_ID_ANDROID || "673073717912-npnceq06jot11a29pt1d1numk68vt9li.apps.googleusercontent.com",
+  ].filter(Boolean);
+
   constructor(
     private db: DatabaseService,
     private jwtService: JwtService,
     private auditService: AuditService,
     private billingService: BillingService,
   ) {}
+
+  async loginWithGoogle(idToken: string) {
+    const ticket = await this.googleClient.verifyIdToken({
+      idToken,
+      audience: this.googleAudiences,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload?.email) throw new UnauthorizedException("Google login failed");
+
+    const googleId = payload.sub;
+    const email = payload.email;
+
+    let user = await this.db.fetchOne<any>(
+      `SELECT id, tenant_id, role, email, first_name, last_name, is_active, google_id
+       FROM users
+       WHERE google_id = :googleId OR LOWER(email) = LOWER(:email)
+       FETCH FIRST 1 ROWS ONLY`,
+      { googleId, email },
+    );
+
+    if (!user) {
+      throw new UnauthorizedException("Usuario no registrado en la plataforma");
+    }
+
+    if (!fromDbBool(user.IS_ACTIVE)) {
+      throw new UnauthorizedException("Usuario inactivo");
+    }
+
+    // Link google_id if not linked yet
+    if (!user.GOOGLE_ID) {
+      await this.db.execute("UPDATE users SET google_id = :googleId WHERE id = :id", { id: user.ID, googleId });
+    }
+
+    return this.issueTokens({
+      id: user.ID,
+      tenantId: user.TENANT_ID,
+      role: user.ROLE,
+      email: user.EMAIL,
+      firstName: user.FIRST_NAME,
+      lastName: user.LAST_NAME,
+    });
+  }
 
   async registerClinic(data: z.infer<typeof registerClinicSchema>) {
     const checkout = this.billingService.simulateCheckout({
