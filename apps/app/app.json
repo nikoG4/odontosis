@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "OdontoSis",
+    "slug": "odontosis",
+    "scheme": "odontosis",
+    "platforms": ["android", "web"],
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "experiments": {
+      "typedRoutes": true
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

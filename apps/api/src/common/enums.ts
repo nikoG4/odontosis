@@ -1,0 +1,28 @@
+export enum RoleName {
+  CLINIC_ADMIN = "CLINIC_ADMIN",
+  DENTIST = "DENTIST",
+  RECEPTIONIST = "RECEPTIONIST",
+}
+
+export enum AppointmentStatus {
+  PENDING_CONFIRMATION = "PENDING_CONFIRMATION",
+  CONFIRMED = "CONFIRMED",
+  CANCELLED = "CANCELLED",
+  RESCHEDULED = "RESCHEDULED",
+  ATTENDED = "ATTENDED",
+  NO_SHOW = "NO_SHOW",
+}
+
+export enum TreatmentStatus {
+  PLANNED = "PLANNED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum PaymentMethod {
+  CASH = "CASH",
+  CARD = "CARD",
+  TRANSFER = "TRANSFER",
+  OTHER = "OTHER",
+}

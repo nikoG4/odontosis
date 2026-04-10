@@ -1,0 +1,16 @@
+[Unit]
+Description=OdontoSis API + Web
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/odontosis/current
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/odontosis/shared/.env
+ExecStart=/usr/bin/node --max-old-space-size=192 apps/api/dist/src/main.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
