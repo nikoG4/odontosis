@@ -80,104 +80,68 @@ odontosis/
 npm install
 ```
 
-Copia y completa los archivos de ejemplo de entorno antes de ejecutar el proyecto:
+Copia los archivos de ejemplo de entorno y completa únicamente valores locales/privados fuera de Git:
 
-```text
-.env.example
-apps/api/.env.example
+```bash
+cp .env.example .env
+cp apps/api/.env.example apps/api/.env
 ```
 
-No subas al repositorio wallets, credenciales reales, tokens OAuth ni secretos JWT.
-
-## Base de datos
-
-Inicializar/migrar la base configurada:
+Luego:
 
 ```bash
 npm run db:migrate
-```
-
-Cargar datos de desarrollo:
-
-```bash
 npm run db:seed
-```
-
-Los datos seed están pensados exclusivamente para desarrollo y deben reemplazarse antes de cualquier despliegue real.
-
-## Desarrollo
-
-### API
-
-```bash
 npm run dev:api
-```
-
-### Web
-
-```bash
 npm run dev:web
 ```
 
-### App Expo
+Para la app compartida:
 
 ```bash
 npm run dev:app
 ```
 
-### App en navegador
+O para ejecutarla en web:
 
 ```bash
 npm run dev:app:web
 ```
 
-## Build
+## Scripts principales
 
-```bash
-npm run build
+```text
+npm run dev:api       Backend NestJS
+npm run dev:web       Frontend React/Vite
+npm run dev:app       App Expo
+npm run dev:app:web   App Expo en navegador
+npm run build         Build de los workspaces
+npm run db:migrate    Inicializa/migra la base de datos
+npm run db:seed       Carga datos de desarrollo
 ```
 
-El monorepo usa npm workspaces para construir las aplicaciones y paquetes compartidos.
+## Base de datos
+
+La aplicación utiliza Oracle como base principal. La configuración y el wallet deben permanecer fuera del repositorio cuando contengan material sensible.
 
 ## Autenticación
 
-OdontoSis combina autenticación propia mediante JWT con integración de Google Login. Los clientes comparten contratos y lógica de acceso mediante los paquetes comunes del monorepo.
+El proyecto soporta autenticación tradicional y Google Login. Los Client IDs, secretos OAuth, huellas de firma y configuraciones específicas de producción deben gestionarse desde variables de entorno y las consolas de los proveedores.
 
-Para OAuth en producción deben utilizarse credenciales y orígenes autorizados específicos del entorno final; no reutilices credenciales de desarrollo en builds públicas.
+## Producción
 
-## Arquitectura
+El proyecto incluye documentación y recursos para despliegue detrás de Nginx con SSL y ejecución del backend como servicio.
 
-```text
-React Web ─────────────┐
-                      │
-Expo / React Native ──┼──> SDK compartido ──> NestJS API ──> Oracle
-                      │
-React Native Web ─────┘
-```
+Consulta [DEPLOYMENT.md](DEPLOYMENT.md) para el flujo de despliegue. La documentación pública evita publicar IPs administrativas, claves, wallets, tokens o huellas de firma.
 
-La separación en workspaces permite compartir tipos y configuración sin duplicar contratos entre backend y clientes.
+## Seguridad
 
-## Despliegue
+- No versionar `.env` reales.
+- No subir Oracle Wallets, claves privadas, service accounts o tokens.
+- Mantener secretos JWT/OAuth en variables de entorno o un gestor de secretos.
+- Mantener huellas SHA de builds y detalles administrativos de infraestructura en documentación privada cuando no sean necesarios para compilar el proyecto.
+- Si una credencial estuvo alguna vez en un repositorio público, debe rotarse; eliminarla del último commit no invalida el historial anterior.
 
-El repositorio contiene configuración para un despliegue liviano con:
+## Estado del proyecto
 
-- servicio Node administrado por `systemd`;
-- Nginx como reverse proxy;
-- SSL/TLS;
-- Oracle remoto;
-- frontend estático servido junto a la aplicación productiva.
-
-Consulta [`DEPLOYMENT.md`](DEPLOYMENT.md) para los pasos específicos de despliegue.
-
-## Estado actual / próximos pasos
-
-- estabilizar Google Login con credenciales definitivas de producción;
-- validar OAuth Android con la firma release;
-- generar builds release/AAB;
-- continuar consolidando la app Expo como frontend principal;
-- ampliar pruebas automatizadas y documentación funcional.
-
-## Documentación adicional
-
-- [`CONTEXT.md`](CONTEXT.md): estado técnico y piezas principales del proyecto.
-- [`DEPLOYMENT.md`](DEPLOYMENT.md): guía de despliegue.
+OdontoSis continúa en desarrollo activo. Las principales áreas pendientes son la estabilización final de OAuth en builds release, el empaquetado móvil de producción y la consolidación de la app Expo como frontend compartido.
