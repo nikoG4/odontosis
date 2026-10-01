@@ -3,28 +3,27 @@
 ## Estado actual
 - Monorepo listo con backend NestJS, web React/Vite y app Expo/React Native Web.
 - Base de datos principal en Oracle con wallet.
-- VPS en Oracle Cloud funcionando con `systemd` y `nginx`.
-- Dominio publico activo: `https://odontosis.online`.
+- Despliegue en VPS con `systemd` y `nginx`.
+- Dominio público activo configurado para producción.
 
 ## Piezas clave
 - Backend: `apps/api`
 - Web comercial/panel: `apps/web`
-- App movil/web compartida: `apps/app`
+- App móvil/web compartida: `apps/app`
 - SDK compartido: `packages/sdk`
 - Tipos compartidos: `packages/types`
 - Config compartida: `packages/config`
 
-## Produccion
-- VPS: `204.216.157.94`
-- Servicio: `odontosis.service`
-- Nginx + SSL configurados
-- Oracle wallet desplegada en el VPS
+## Producción
+- Servicio gestionado con `systemd`.
+- Nginx + SSL configurados.
+- Oracle Wallet desplegado fuera del repositorio.
+- La IP del servidor, rutas internas y credenciales de infraestructura no deben documentarse en archivos públicos.
 
 ## Google Login
-- Web debe usar `https://odontosis.online` como origen OAuth.
+- Web debe usar el dominio productivo autorizado como origen OAuth.
 - Android usa el package `com.nikoovelar.odontosis`.
-- SHA-1 de la build debug actual:
-  - `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`
+- Las huellas SHA de debug/release deben mantenerse en la consola del proveedor OAuth o en documentación privada, no en archivos públicos.
 
 ## Archivos importantes
 - `apps/api/src/services/auth.service.ts`
@@ -38,9 +37,10 @@
 ## Pendientes recomendados
 1. Terminar de estabilizar Google Login en web con el client ID final del dominio.
 2. Confirmar el OAuth Android correcto para la APK release firmada.
-3. Generar build release/AAB para distribucion.
+3. Generar build release/AAB para distribución.
 4. Seguir consolidando la app Expo como frontend principal.
 
-## Notas
+## Notas de seguridad
 - Evitar commitear archivos generados: `dist`, `android`, `node_modules`, logs y tarballs.
-- Mantener el dominio y SSL ya configurados en el VPS.
+- Mantener secretos, wallets, claves, tokens, IPs administrativas y huellas de firma fuera del repositorio público.
+- Usar `.env.example` únicamente con valores ficticios o placeholders.
